@@ -1,47 +1,34 @@
 import streamlit as st
 from datetime import datetime
 
-# 1. CẤU HÌNH GIAO DIỆN TUYỆT ĐỐI (FORCE LIGHT MODE TOÀN DIỆN)
+# 1. CẤU HÌNH GIAO DIỆN TUYỆT ĐỐI (TRIỆT TIÊU MÀU TRẮNG)
 st.set_page_config(page_title="Thư Viện Số Thầy Hậu", page_icon="📚", layout="centered")
 
 st.markdown("""
     <style>
-    /* 1. Ép nền trắng toàn trang, bao gồm cả các container bên phải */
-    .stApp, .stMain, .main, .stBlock {
+    /* Ép nền trắng toàn bộ mọi lớp của Streamlit */
+    .stApp, .stMain, .main, [data-testid="stHeader"], [data-testid="stSidebar"] {
         background-color: white !important;
     }
     
-    /* 2. Ép màu chữ ĐEN cho TẤT CẢ các thẻ văn bản trong hệ thống */
-    h1, h2, h3, h4, p, li, span, label {
+    /* Ép tất cả chữ mặc định (label, text) về màu đen */
+    * {
         color: #000000 !important;
     }
 
-    /* 3. ĐẶC TRỊ CHO CỘT BÊN PHẢI: Ép màu nhãn (label) của ô nhập liệu */
-    .stWidgetLabel p {
-        color: #000000 !important;
-        font-weight: bold !important;
-    }
-
-    /* 4. Fix màu chữ bên trong các ô nhập liệu (Input/TextArea) */
-    .stTextInput input, .stTextArea textarea {
-        color: #000000 !important;
-        background-color: #F8F9FA !important;
-        border: 1px solid #D1D5DB !important;
-    }
-
-    /* 5. Khung nội dung sách (Cột bên phải hiển thị chương) */
+    /* Khung nội dung sách */
     .book-box {
         background-color: #FFFFFF !important;
         padding: 25px;
         border-radius: 12px;
-        border: 2px solid #E5E7EB;
+        border: 2px solid #EEEEEE;
         line-height: 1.8;
         font-size: 19px;
         color: #000000 !important;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
 
-    /* 6. Nút bấm (Nền xanh, chữ phải trắng tinh) */
+    /* Nút bấm xanh - chữ trắng */
     .stButton>button {
         background-color: #1E40AF !important;
         border: none !important;
@@ -51,54 +38,59 @@ st.markdown("""
         font-weight: bold !important;
     }
 
-    /* 7. Khung bình luận bên dưới */
+    /* Khung bình luận */
     .comment-card {
-        background-color: #F3F4F6 !important;
+        background-color: #F9FAFB !important;
         padding: 15px;
         border-radius: 10px;
         border-left: 5px solid #1E40AF;
-        color: #000000 !important;
+        margin-bottom: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. DỮ LIỆU SÁCH (Cập nhật đầy đủ các chương anh viết)
+# 2. DỮ LIỆU SÁCH
 sach_du_lieu = {
     "Người Thầy Giữa Đời Thường": {
         "Lời nói đầu": """Có những con người không cần bước lên sân khấu lớn vẫn khiến người khác kính trọng. Có những cuộc đời không ồn ào nhưng để lại dấu ấn sâu sắc trong lòng bao thế hệ...""",
         "Chương 1: Tuổi thơ": """Ngày 7 tháng 9 năm 1978, tại phường Tân Lộc – vùng đất hiền hòa của Thành phố Cần Thơ – cậu bé Trần Trung Hậu chào đời...""",
-        "Chương 2: Bước chân vào nghề": "Năm 2000, thầy Trần Trung Hậu chính thức bước vào nghề giáo...",
-        "Chương 5: Câu chuyện học trò": """Trong hành trình dạy học, có những niềm vui lớn, nhưng cũng có những nỗi buồn khiến người thầy day dứt rất lâu...""",
-        "Kết luận": """Giữa đời thường, có những con người sống lặng lẽ mà lớn lao. Thầy Trần Trung Hậu là một người như thế."""
+        "Kết luận": """Giữa đời thường, có những con người sống lặng lẽ mà lớn lao."""
     }
 }
 
 if 'comments' not in st.session_state:
     st.session_state.comments = []
 
-# 3. HIỂN THỊ GIAO DIỆN
-# Dùng CSS trực tiếp trong thẻ HTML để đảm bảo cột bên phải không bị sai màu
-st.markdown("<h1 style='text-align: center; color: black !important;'>📚 THƯ VIỆN SỐ THẦY HẬU</h1>", unsafe_allow_html=True)
+# 3. HIỂN THỊ GIAO DIỆN (ÉP MÀU TRỰC TIẾP VÀO TỪNG DÒNG)
 
-# Thanh điều hướng bên trái
-st.sidebar.markdown("<h3 style='color: black !important;'>📖 MỤC LỤC</h3>", unsafe_allow_html=True)
+# Tiêu đề chính (Cột phải) - Ép màu đen trực tiếp
+st.markdown("<h1 style='text-align: center; color: #000000 !important; font-weight: bold;'>📚 THƯ VIỆN SỐ THẦY HẬU</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #333333 !important;'>Tác phẩm chuyên sâu của Nhà giáo Ưu tú Trần Trung Hậu</p>", unsafe_allow_html=True)
+
+# Sidebar (Cột trái)
+st.sidebar.markdown("<h2 style='color: #000000 !important;'>📖 MỤC LỤC</h2>", unsafe_allow_html=True)
 chon_chuong = st.sidebar.radio("Chọn chương:", list(sach_du_lieu["Người Thầy Giữa Đời Thường"].keys()))
 
-# Nội dung hiển thị ở cột bên phải
-st.markdown(f"<h2 style='color: black !important;'>{chon_chuong}</h2>", unsafe_allow_html=True)
+# Tiêu đề chương (Cột phải) - Ép màu đen trực tiếp
+st.markdown(f"<h2 style='color: #000000 !important; border-bottom: 2px solid #1E40AF; padding-bottom: 10px;'>{chon_chuong}</h2>", unsafe_allow_html=True)
+
+# Nội dung chương
 noidung = sach_du_lieu["Người Thầy Giữa Đời Thường"][chon_chuong]
+st.markdown(f"<div class='book-box' style='color: #000000 !important;'>{noidung}</div>", unsafe_allow_html=True)
 
-# Hộp chứa nội dung sách (Cột phải)
-st.markdown(f"<div class='book-box'>{noidung}</div>", unsafe_allow_html=True)
-
-st.markdown("---")
+st.markdown("<br><hr>", unsafe_allow_html=True)
 
 # 4. PHẦN BÌNH LUẬN (MẠNG XÃ HỘI)
-st.markdown("<h3 style='color: black !important;'>💬 Cảm nhận của bạn đọc</h3>", unsafe_allow_html=True)
+st.markdown("<h3 style='color: #000000 !important;'>💬 Cảm nhận của bạn đọc</h3>", unsafe_allow_html=True)
 
 with st.form("fb_form", clear_on_submit=True):
-    ten = st.text_input("Tên của anh/chị:")
-    cam_nhan = st.text_area("Lời nhắn gửi đến thầy Hậu:")
+    # Nhãn ô nhập liệu ép màu đen
+    st.markdown("<p style='margin-bottom: -50px; color: black !important; font-weight: bold;'>Tên của anh/chị:</p>", unsafe_allow_html=True)
+    ten = st.text_input("", placeholder="Nhập tên tại đây...")
+    
+    st.markdown("<p style='margin-bottom: -50px; color: black !important; font-weight: bold;'>Lời nhắn gửi:</p>", unsafe_allow_html=True)
+    cam_nhan = st.text_area("", placeholder="Chia sẻ cảm xúc của anh/chị...")
+    
     submit = st.form_submit_button("GỬI BÌNH LUẬN")
     
     if submit and ten and cam_nhan:
@@ -113,8 +105,8 @@ with st.form("fb_form", clear_on_submit=True):
 for c in st.session_state.comments:
     st.markdown(f"""
     <div class='comment-card'>
-        <strong style='color: black !important;'>👤 {c['name']}</strong> 
-        <small style='color: #666 !important;'>({c['time']})</small><br>
-        <p style='margin-top:5px; color: black !important;'>{c['text']}</p>
+        <strong style='color: #000000 !important;'>👤 {c['name']}</strong> 
+        <small style='color: #666666 !important;'>({c['time']})</small><br>
+        <p style='margin-top:5px; color: #000000 !important;'>{c['text']}</p>
     </div>
     """, unsafe_allow_html=True)
