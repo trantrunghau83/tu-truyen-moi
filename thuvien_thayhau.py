@@ -1,95 +1,91 @@
 import streamlit as st
 from datetime import datetime
 
-# 1. CẤU HÌNH GIAO DIỆN TUYỆT ĐỐI (TRIỆT TIÊU MÀU TRẮNG)
+# 1. CẤU HÌNH GIAO DIỆN TUYỆT ĐỐI (FORCE LIGHT MODE)
 st.set_page_config(page_title="Thư Viện Số Thầy Hậu", page_icon="📚", layout="centered")
 
+# Lệnh CSS này để quét sạch các khoảng trắng dư thừa và ép nền trắng
 st.markdown("""
     <style>
-    /* Ép nền trắng toàn bộ mọi lớp của Streamlit */
-    .stApp, .stMain, .main, [data-testid="stHeader"], [data-testid="stSidebar"] {
-        background-color: white !important;
+    /* Ép nền trắng tuyệt đối cho mọi ngóc ngách */
+    [data-testid="stAppViewContainer"], .main, .stApp, [data-testid="stHeader"] {
+        background-color: #FFFFFF !important;
     }
+    /* Ẩn các thành phần thừa của Streamlit có thể gây màu trắng */
+    header, footer {visibility: hidden;}
     
-    /* Ép tất cả chữ mặc định (label, text) về màu đen */
-    * {
-        color: #000000 !important;
-    }
-
     /* Khung nội dung sách */
     .book-box {
-        background-color: #FFFFFF !important;
+        background-color: #FDFDFD !important;
         padding: 25px;
-        border-radius: 12px;
-        border: 2px solid #EEEEEE;
+        border-radius: 10px;
+        border: 1px solid #EEEEEE;
         line-height: 1.8;
         font-size: 19px;
         color: #000000 !important;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        margin-top: 10px;
     }
-
-    /* Nút bấm xanh - chữ trắng */
+    
+    /* Nút bấm xanh chữ trắng */
     .stButton>button {
         background-color: #1E40AF !important;
+        color: white !important;
         border: none !important;
-    }
-    .stButton>button p {
-        color: #FFFFFF !important;
         font-weight: bold !important;
     }
-
+    
     /* Khung bình luận */
     .comment-card {
-        background-color: #F9FAFB !important;
+        background-color: #F3F4F6 !important;
         padding: 15px;
-        border-radius: 10px;
+        border-radius: 8px;
         border-left: 5px solid #1E40AF;
         margin-bottom: 10px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. DỮ LIỆU SÁCH
+# 2. DỮ LIỆU NỘI DUNG SÁCH
 sach_du_lieu = {
     "Người Thầy Giữa Đời Thường": {
         "Lời nói đầu": """Có những con người không cần bước lên sân khấu lớn vẫn khiến người khác kính trọng. Có những cuộc đời không ồn ào nhưng để lại dấu ấn sâu sắc trong lòng bao thế hệ...""",
         "Chương 1: Tuổi thơ": """Ngày 7 tháng 9 năm 1978, tại phường Tân Lộc – vùng đất hiền hòa của Thành phố Cần Thơ – cậu bé Trần Trung Hậu chào đời...""",
-        "Kết luận": """Giữa đời thường, có những con người sống lặng lẽ mà lớn lao."""
+        "Kết luận": """Giữa đời thường, có những con người sống lặng lẽ mà lớn lao. Thầy Trần Trung Hậu là một người như thế."""
     }
 }
 
 if 'comments' not in st.session_state:
     st.session_state.comments = []
 
-# 3. HIỂN THỊ GIAO DIỆN (ÉP MÀU TRỰC TIẾP VÀO TỪNG DÒNG)
+# 3. HIỂN THỊ GIAO DIỆN (DÙNG HTML THUẦN ĐỂ ÉP MÀU ĐEN)
 
-# Tiêu đề chính (Cột phải) - Ép màu đen trực tiếp
-st.markdown("<h1 style='text-align: center; color: #000000 !important; font-weight: bold;'>📚 THƯ VIỆN SỐ THẦY HẬU</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #333333 !important;'>Tác phẩm chuyên sâu của Nhà giáo Ưu tú Trần Trung Hậu</p>", unsafe_allow_html=True)
+# Tiêu đề chính (Dùng HTML để không bị Streamlit can thiệp)
+st.markdown("<div style='text-align: center;'><span style='color: #000000 !important; font-size: 35px; font-weight: bold;'>📚 THƯ VIỆN SỐ THẦY HẬU</span></div>", unsafe_allow_html=True)
+st.markdown("<div style='text-align: center;'><span style='color: #444444 !important; font-size: 18px;'>Tác phẩm chuyên sâu của Nhà giáo Ưu tú Trần Trung Hậu</span></div>", unsafe_allow_html=True)
+st.markdown("<br>", unsafe_allow_html=True)
 
-# Sidebar (Cột trái)
-st.sidebar.markdown("<h2 style='color: #000000 !important;'>📖 MỤC LỤC</h2>", unsafe_allow_html=True)
-chon_chuong = st.sidebar.radio("Chọn chương:", list(sach_du_lieu["Người Thầy Giữa Đời Thường"].keys()))
+# Sidebar (Mục lục)
+st.sidebar.markdown("<span style='color: #000000 !important; font-size: 24px; font-weight: bold;'>📖 MỤC LỤC</span>", unsafe_allow_html=True)
+chon_chuong = st.sidebar.radio("", list(sach_du_lieu["Người Thầy Giữa Đời Thường"].keys()))
 
-# Tiêu đề chương (Cột phải) - Ép màu đen trực tiếp
-st.markdown(f"<h2 style='color: #000000 !important; border-bottom: 2px solid #1E40AF; padding-bottom: 10px;'>{chon_chuong}</h2>", unsafe_allow_html=True)
+# Tiêu đề chương và Nội dung (ÉP MÀU ĐEN TRỰC TIẾP TRONG THẺ SPAN)
+st.markdown(f"<div style='border-bottom: 2px solid #1E40AF; padding-bottom: 5px;'><span style='color: #000000 !important; font-size: 26px; font-weight: bold;'>{chon_chuong}</span></div>", unsafe_allow_html=True)
 
-# Nội dung chương
 noidung = sach_du_lieu["Người Thầy Giữa Đời Thường"][chon_chuong]
-st.markdown(f"<div class='book-box' style='color: #000000 !important;'>{noidung}</div>", unsafe_allow_html=True)
+st.markdown(f"<div class='book-box'><span style='color: #000000 !important;'>{noidung}</span></div>", unsafe_allow_html=True)
 
 st.markdown("<br><hr>", unsafe_allow_html=True)
 
-# 4. PHẦN BÌNH LUẬN (MẠNG XÃ HỘI)
-st.markdown("<h3 style='color: #000000 !important;'>💬 Cảm nhận của bạn đọc</h3>", unsafe_allow_html=True)
+# 4. PHẦN BÌNH LUẬN
+st.markdown("<span style='color: #000000 !important; font-size: 22px; font-weight: bold;'>💬 Cảm nhận của bạn đọc</span>", unsafe_allow_html=True)
 
 with st.form("fb_form", clear_on_submit=True):
-    # Nhãn ô nhập liệu ép màu đen
-    st.markdown("<p style='margin-bottom: -50px; color: black !important; font-weight: bold;'>Tên của anh/chị:</p>", unsafe_allow_html=True)
-    ten = st.text_input("", placeholder="Nhập tên tại đây...")
+    st.markdown("<span style='color: #000000 !important; font-weight: bold;'>Tên của anh/chị:</span>", unsafe_allow_html=True)
+    ten = st.text_input("", label_visibility="collapsed")
     
-    st.markdown("<p style='margin-bottom: -50px; color: black !important; font-weight: bold;'>Lời nhắn gửi:</p>", unsafe_allow_html=True)
-    cam_nhan = st.text_area("", placeholder="Chia sẻ cảm xúc của anh/chị...")
+    st.markdown("<span style='color: #000000 !important; font-weight: bold;'>Lời nhắn gửi:</span>", unsafe_allow_html=True)
+    cam_nhan = st.text_area("", label_visibility="collapsed")
     
     submit = st.form_submit_button("GỬI BÌNH LUẬN")
     
@@ -101,12 +97,12 @@ with st.form("fb_form", clear_on_submit=True):
         })
         st.rerun()
 
-# Hiển thị bình luận
+# Hiển thị bình luận (Sử dụng span màu đen)
 for c in st.session_state.comments:
     st.markdown(f"""
     <div class='comment-card'>
-        <strong style='color: #000000 !important;'>👤 {c['name']}</strong> 
-        <small style='color: #666666 !important;'>({c['time']})</small><br>
-        <p style='margin-top:5px; color: #000000 !important;'>{c['text']}</p>
+        <span style='color: #000000 !important; font-weight: bold;'>👤 {c['name']}</span> 
+        <span style='color: #666666 !important; font-size: 12px;'>({c['time']})</span><br>
+        <div style='margin-top:8px;'><span style='color: #000000 !important;'>{c['text']}</span></div>
     </div>
     """, unsafe_allow_html=True)
